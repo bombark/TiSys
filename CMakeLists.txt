@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 2.6)
+
+# Configure
+project( TiSys )
+add_definitions(-std=gnu++0x)
+#set (CMAKE_INSTALL_PREFIX ./deb)
+#find_package(tiobj)
+set(LIBS tisys tiarg tiobj)
+
+# Compile
+add_library(tisys src/tisys-system.cpp src/tisys-filesystem.cpp)
+#add_executable(tisys.info src/tisys-info.cpp)
+#add_executable(tisys.ls   src/tisys-ls.cpp)
+#add_executable(tisys.ctx  src/tisys-ctx.cpp)
+
+#target_link_libraries(tisys.info ${LIBS})
+#target_link_libraries(  tisys.ls ${LIBS})
+#target_link_libraries( tisys.ctx ${LIBS})
+
+
+# Install
+#install(TARGETS tisys.info  DESTINATION bin)
+#install(TARGETS tisys.ls    DESTINATION bin)
+#install(TARGETS tisys.ctx   DESTINATION bin)
+install(TARGETS tisys       DESTINATION lib)
+install(FILES src/tisys.hpp DESTINATION include)

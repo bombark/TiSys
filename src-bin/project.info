@@ -1,0 +1,4 @@
+#!/bin/bash
+
+projurl=$(tisys.ctx Project);
+cat "$projurl/.sysobj.ti"

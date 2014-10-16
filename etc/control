@@ -1,0 +1,10 @@
+Source: tisys
+Section: unknown
+Priority: extra
+Maintainer: Felipe Bombardelli <felipebombardelli@gmail.com>
+version: 0.1.0
+Homepage: www.google.com
+Package: tisys
+Architecture: i386
+Depends: libexiv2-dev
+Description: TiSys

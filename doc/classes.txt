@@ -1,0 +1,16 @@
+Device
+Device:Disk
+Device:Disk:Partition
+Device:Cdrom
+Device:Network
+Device:Network:Cable
+Device:Network:Wifi
+Device:USB
+Device:Keyboard
+Device:Mouse
+Device:CPU
+Device:Video
+Device:
+
+
+
