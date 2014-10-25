@@ -31,16 +31,15 @@ using namespace std;
 int main(int argc, char** argv){
 	TiObj args, folder;
 	getArgs(args, argc, argv);
-
+	Filesystem fs;
 
 	string classe = args.atStr("_Akk");
-	string    url = args.atStr("from", ".");
+	string    url = args.atStr("from", "");
 
 	/*TiObj aaa;
 	tiurl_explode(aaa, url);
 	return 0;*/
 
-	Filesystem fs;
 	if ( classe != "" ){
 		if ( classe == "User" ){
 			/*TiObj aux;
@@ -55,9 +54,7 @@ int main(int argc, char** argv){
 		}
 	} else {
 		TiObj folder;
-		//fs.newfolder("testando");
 		fs.listdir(folder, url);
-
 		folder.sort();
 		cout << folder.box;
 	}

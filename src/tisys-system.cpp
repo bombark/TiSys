@@ -39,7 +39,7 @@ bool System::listDeviceBlock      (TiObj& out){
 			fscanf(fd, "%ld", &buf_int);
 			fclose(fd);
 		}
-		block["size"] = (int) buf_int;
+		block["size"] = (long int) buf_int;
 		// Get number of device
 		buf_char[0] = '\0';
 		fd = fopen(path_add(block_url,"dev").c_str(), "r");
@@ -55,7 +55,7 @@ bool System::listDeviceBlock      (TiObj& out){
 			fscanf(fd, "%ld", &buf_int);
 			fclose(fd);
 		}
-		block["is_removable"] = (int) buf_int;
+		block["is_removable"] = buf_int;
 		// Get if only read
 		buf_int = 0;
 		fd = fopen(path_add(block_url,"ro").c_str(), "r");
@@ -63,7 +63,7 @@ bool System::listDeviceBlock      (TiObj& out){
 			fscanf(fd, "%ld", &buf_int);
 			fclose(fd);
 		}
-		block["is_readonly"] = (int)buf_int;
+		block["is_readonly"] = buf_int;
 
 		out.box += block;
 	}

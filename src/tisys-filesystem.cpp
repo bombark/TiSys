@@ -109,6 +109,43 @@ std::string path_absolute(std::string url){
 }
 
 
+std::string path_context (std::string classe, std::string _url){
+	string url;
+	if ( _url == "" )
+		url = path_absolute(".");
+	else
+		url = path_absolute(_url);
+
+	Filesystem fs;
+	TiObj aux;
+
+	while (true){
+		if ( url.size() == 0 )
+			return "";
+		aux.classe = fs.folder_type(url);
+		if ( aux.is(classe) ){
+			break;
+		}
+		
+		if ( url == "/" ){
+			return "";
+		} else {
+			int i;
+			for ( i=url.size()-1; i>0; i--){
+				if ( url[i] == '/' ){
+					break;
+				}
+			}
+			if ( i == 0 )
+				url.resize(1);
+			else
+				url.resize(i);
+		}
+	}
+	return url;
+}
+
+
 void tiurl_explode(TiObj& out, std::string tiurl){
 	out.clear();
 	if ( tiurl.size() == 0 )
@@ -174,6 +211,12 @@ void tiurl_explode(TiObj& out, std::string tiurl){
 		out.box += aux;
 	}
 	cout << out;
+}
+
+
+void tiurl_sysobj (TiObj& out, std::string tiurl){
+	out.clear();
+	out.loadFile( path_add(tiurl, ".sysobj.ti") );
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -266,15 +309,15 @@ bool Filesystem::info(TiObj& out, std::string url){
 	struct tm* clock;
 	char strbuf[1024];
 	int permission = ((buf.st_mode & S_IRWXU) >> 6)*100 + ((buf.st_mode & S_IRWXG) >> 3)*10 + ((buf.st_mode & S_IRWXO));
-	out["permission"] = permission;
-	out["inode"] = (int)buf.st_ino;
+	out["permission"] = (long int) permission;
+	out["inode"] = (long int) buf.st_ino;
 	out["name"] = path_last(file_url);
 	out["url"] = path_absolute(file_url);
-	out["uid"] = (int)buf.st_uid;
-	out["gid"] = (int)buf.st_gid;
-	out["size_bytes"]  = (int)buf.st_size;
-	out["size_blocks"] = (int)buf.st_blocks;
-	out["block_size"]  = (int)buf.st_blksize;
+	out["uid"] = (long int) buf.st_uid;
+	out["gid"] = (long int)buf.st_gid;
+	out["size_bytes"]  = (long int)buf.st_size;
+	out["size_blocks"] = (long int)buf.st_blocks;
+	out["block_size"]  = (long int)buf.st_blksize;
 	clock = gmtime(&(buf.st_atime));
 	sprintf(strbuf,"%d/%d/%d,%d:%d:%d",clock->tm_year+1900,clock->tm_mon+1,clock->tm_mday,clock->tm_hour,clock->tm_min,clock->tm_sec); 
 	out["atime"] = strbuf;

@@ -15,9 +15,13 @@ std::string path_add(std::string base, std::string add1, std::string add2, std::
 std::string path_remove  (std::string url);
 std::string path_last    (std::string url);
 std::string path_absolute(std::string url);
+std::string path_context (std::string classe, std::string _url=".");
+
 
 void tiurl_explode(TiObj& out, std::string tiurl);
+void tiurl_sysobj (TiObj& out, std::string tiurl);
 
+int  csystem(std::string cmd);
 
 class Filesystem {
 	std::string root;
@@ -62,11 +66,12 @@ class Filesystem {
 	
 	std::string last_error();
 	
+	std::string file_type  (std::string url);
+	std::string folder_type(std::string url);
+
   private:
 	void error(std::string msg);
 	void log  (std::string function);
-	std::string file_type  (std::string url);
-	std::string folder_type(std::string url);
 	std::string path_set   (std::string url);
 };
 
@@ -105,6 +110,30 @@ class System {
 
 
 
+
+class TiProcess {
+	std::string buf_send;
+	std::string buf_recv;
+	std::string lasterror;
+	FILE *wstream;
+	FILE *rstream;
+	pid_t id;
+	
+
+  public:
+	~TiProcess();
+	bool start(std::string cmd);
+	int  exec (std::string& out, std::string cmd);
+
+	void send   (std::string data);
+	void recv   (std::string& out);
+	int  recvAll(std::string& out);
+	void recvObj();
+
+	void flush();
+	int  wait ();
+	void finalize();
+};
 
 
 

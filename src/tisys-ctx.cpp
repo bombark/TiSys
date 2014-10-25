@@ -22,7 +22,7 @@ int main(int argc, char** argv){
 		return 0;
 	}
 
-	cout  << TiSys::getCtx(classe, from) << endl;
+	cout  << path_context(classe, from) << endl;
 	return 0;
 }
 
