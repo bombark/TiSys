@@ -28,6 +28,15 @@ using namespace std;
 	printf ("lines %d\n", w.ws_row);
     printf ("columns %d\n", w.ws_col);*/
 
+
+void printBox(TiBox& box){
+	for (uint i=0; i<box.size(); i++){
+		cout << printObj(box[i]) << endl;
+		cout << box[i].toString() << endl;
+	}
+}
+
+
 int main(int argc, char** argv){
 	TiObj args, folder;
 	getArgs(args, argc, argv);
@@ -50,13 +59,13 @@ int main(int argc, char** argv){
 			fs.listdir(folder, url);
 			folder.sort();
 			folder.select(aux, classe);
-			cout << aux;
+			printBox(aux);
 		}
 	} else {
 		TiObj folder;
 		fs.listdir(folder, url);
 		folder.sort();
-		cout << folder.box;
+		printBox(folder.box);
 	}
 }
 
