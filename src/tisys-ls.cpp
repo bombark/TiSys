@@ -31,7 +31,6 @@ using namespace std;
 
 void printBox(TiBox& box){
 	for (uint i=0; i<box.size(); i++){
-		cout << printObj(box[i]) << endl;
 		cout << box[i].toString() << endl;
 	}
 }
