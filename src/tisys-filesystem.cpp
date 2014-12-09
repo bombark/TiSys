@@ -13,6 +13,8 @@
 #include <libgen.h>
 #include <dirent.h>
 #include <errno.h>
+#include <algorithm>
+#include <string>
 
 
 // Usado em Filesystem::file_type
@@ -476,6 +478,7 @@ void Filesystem::log(std::string function){
 
 std::string Filesystem::file_type  (std::string url){
 	string ext = url.substr(url.find_last_of(".") + 1);
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 	int ini = 0;
 	int end = sizeof(VETOR)/(2*sizeof(string));
 	while (true){
