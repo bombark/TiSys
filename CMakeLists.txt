@@ -8,7 +8,7 @@ add_definitions(-std=gnu++0x)
 set(LIBS tisys tiarg tiobj)
 
 # Compile
-add_library(tisys src/tisys-system.cpp src/tisys-filesystem.cpp)    # src/tisys-process.cpp)
+add_library(tisys SHARED src/tisys-system.cpp src/tisys-filesystem.cpp)    # src/tisys-process.cpp)
 #add_executable(tisys.info src/tisys-info.cpp)
 add_executable(tisys.ls     src/tisys-ls.cpp)
 add_executable(node-class   src/node-class.cpp)
