@@ -24,6 +24,10 @@ void tiurl_sysobj (TiObj& out, std::string tiurl);
 int  csystem(std::string cmd);
 
 class Filesystem {
+  public:
+	TiObj cache;
+
+  private:
 	std::string root;
 	std::string cur_path;
 	std::string status_func;
@@ -34,7 +38,9 @@ class Filesystem {
 	Filesystem();
 	Filesystem(std::string cur_path, string root="");
 
-	bool listdir    (TiObj& out, std::string url=".");
+	bool        listdir  (TiObj& out, std::string url=".");
+	inline bool listdir  (std::string url="."){return this->listdir(this->cache, url);}
+
 	bool listdirtree(TiObj& out, std::string url=".");
 	bool info       (TiObj& out, std::string url=".");
 	//bool select(TiObj& out, string query, string url);
@@ -54,6 +60,8 @@ class Filesystem {
 	bool rename(std::string  old, std::string novo);
 	
 	bool node_exist   (std::string url);
+	inline bool exists   (std::string url){return this->node_exist(url);}
+
 	bool node_isfolder(std::string url);
 	bool node_isfile  (std::string url);	
 	bool node_islink  (std::string url);
