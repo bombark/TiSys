@@ -38,11 +38,13 @@ class Filesystem {
 	Filesystem();
 	Filesystem(std::string cur_path, string root="");
 
-	bool        listdir  (TiObj& out, std::string url=".");
-	inline bool listdir  (std::string url="."){return this->listdir(this->cache, url);}
+	bool        listdir (TiObj& out, std::string url=".");
+	inline bool listdir (std::string url="."){return this->listdir(this->cache, url);}
 
-	bool listdirtree(TiObj& out, std::string url=".");
-	bool info       (TiObj& out, std::string url=".");
+	bool listdirtree (TiObj& out, std::string url=".");
+	bool info        (TiObj& out, std::string url=".");
+	inline bool info (std::string url="."){return this->info(this->cache, url);}
+
 	//bool select(TiObj& out, string query, string url);
 	
 	bool newfolder(std::string url, mode_t mode=0755);
