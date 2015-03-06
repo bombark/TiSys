@@ -260,9 +260,11 @@ bool Filesystem::listdir(TiObj& out, std::string url){
 					out.box += novo;
 				} else if (S_ISDIR (buf.st_mode) ){
 					TiObj *novo = new TiObj();
-					novo->classe = this->folder_type(item_url);
-					novo->set("name", ep->d_name);
+					//novo->classe = this->folder_type(item_url);
+					this->folder_sysobj( *novo, item_url );
 					novo->set( "url", item);
+					if ( !novo->has("name") )
+						novo->set("name", ep->d_name);
 					out.box += novo;
 				}
 			}
@@ -497,14 +499,20 @@ std::string Filesystem::file_type  (std::string url){
 
 std::string Filesystem::folder_type(std::string url){
 	string descfile = path_add(url,".sysobj.ti");
-	FILE* fd   = fopen(descfile.c_str(), "r");
-	if ( fd ){
+	if ( this->node_exist(descfile) ){
 		TiObj meta;
 		meta.loadFile(descfile);
-		fclose(fd);
 		return string("Folder:")+meta.classe;
 	} else {
 		return "Folder";
+	}
+}
+
+void Filesystem::folder_sysobj(TiObj& out, std::string url){
+	out.clear();
+	string descfile = path_add(url,".sysobj.ti");
+	if ( this->node_exist(descfile) ){
+		out.loadFile(descfile);
 	}
 }
 

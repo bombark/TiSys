@@ -23,10 +23,7 @@ void tiurl_sysobj (TiObj& out, std::string tiurl);
 
 int  csystem(std::string cmd);
 
-class Filesystem {
-  public:
-	TiObj cache;
-
+class Filesystem : public TiObj {
   private:
 	std::string root;
 	std::string cur_path;
@@ -39,11 +36,11 @@ class Filesystem {
 	Filesystem(std::string cur_path, string root="");
 
 	bool        listdir (TiObj& out, std::string url=".");
-	inline bool listdir (std::string url="."){return this->listdir(this->cache, url);}
+	inline bool listdir (std::string url="."){return this->listdir(*this, url);}
 
 	bool listdirtree (TiObj& out, std::string url=".");
 	bool info        (TiObj& out, std::string url=".");
-	inline bool info (std::string url="."){return this->info(this->cache, url);}
+	inline bool info (std::string url="."){return this->info(*this, url);}
 
 	//bool select(TiObj& out, string query, string url);
 	
@@ -65,7 +62,7 @@ class Filesystem {
 	inline bool exists   (std::string url){return this->node_exist(url);}
 
 	bool node_isfolder(std::string url);
-	bool node_isfile  (std::string url);	
+	bool node_isfile  (std::string url);
 	bool node_islink  (std::string url);
 	bool node_isblock (std::string url);
 	
@@ -78,6 +75,7 @@ class Filesystem {
 	
 	std::string file_type  (std::string url);
 	std::string folder_type(std::string url);
+	void folder_sysobj(TiObj& out, std::string url);
 
   private:
 	void error(std::string msg);
@@ -87,14 +85,15 @@ class Filesystem {
 
 
 class Objsystem : public Filesystem {
-	bool list    (TiObj& out, std::string tiurl);
-	bool list    (TiObj& out, std::string query, std::string tiurl);
-	bool listtree(TiObj& out, std::string query, std::string tiurl);
-	bool info    (TiObj& out, std::string tiurl);
+  public:
+	/*bool list    (TiObj& out, std::string tiurl);
+	bool list    (std::string query, std::string tiurl);
+	bool listtree(std::string query, std::string tiurl);
+	bool info    (std::string tiurl);
 	
 	//bool context (std::string url);
 	
-	bool mkobj(std::string tiurl, TiObj& data);
+	bool mkobj(std::string tiurl, TiObj& data);*/
 };
 
 
