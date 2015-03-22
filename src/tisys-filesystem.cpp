@@ -514,6 +514,9 @@ void Filesystem::folder_sysobj(TiObj& out, std::string url){
 	if ( this->node_exist(descfile) ){
 		out.loadFile(descfile);
 	}
+	if ( out.classe == "" ){
+		out.set("class", "Folder");
+	}
 }
 
 std::string Filesystem::path_set(std::string url){
