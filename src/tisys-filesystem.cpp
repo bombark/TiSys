@@ -22,38 +22,38 @@ string VETOR[][2] = {
 	{ "avi", "Video:avi" },
 	{ "bmp", "Image:bmp" },
 	{ "bz2", "Package:bz2" },
-	{   "c", "Code:c"   },
-	{ "cpp", "Code:cpp" },
-	{ "css", "MarkLing:css" },
+	{   "c", "Text:Code:c"   },
+	{ "cpp", "Text:Code:cpp" },
+	{ "css", "Text:MarkLing:css" },
 	{ "dcm", "Image:dcm" },
 	{ "deb", "Package:deb" },
 	{ "flv", "Video:flv" },
 	{ "gif", "Image:gif" },
 	{  "gz", "Package:gz" },
-	{"html", "MarkLing:html"},
-	{"java", "Code:java"},
+	{"html", "Text:MarkLing:html"},
+	{"java", "Text:Code:java"},
 	{"jpeg", "Image:jpg" },
 	{ "jpg", "Image:jpg" },
-	{  "js", "Code:js"},
+	{  "js", "Text:Code:js"},
 	{"json", "MarkLing:json" },
 	{ "mp3", "Audio:mp3" },
 	{ "mp4", "Video:mp4" },
 	{ "ogg", "Audio:ogg" },
 	{ "odt", "Document:odt"},
-	{ "pas", "Code:pas" },
+	{ "pas", "Text:Code:pas" },
 	{ "pdf", "Book:pdf" },	
-	{ "php", "Code:php"},
+	{ "php", "Text:Code:php"},
 	{ "png", "Image:png" },
-	{  "py", "Code:py"  },
+	{  "py", "Text:Code:py"  },
 	{ "rar", "Package:rar" },
-	{  "sh", "Code:sh"},
-	{ "tex", "MarkLing:tex" },
+	{  "sh", "Text:Code:sh"},
+	{ "tex", "Text:MarkLing:tex" },
 	{ "tgz", "Package:tgz" },
 	{  "ti", "Object" },
 	{ "ttf", "Font:ttf" },
 	{ "txt", "Text:txt" },	
 	{ "wav", "Audio:wav" },
-	{ "xml", "MarkLing:xml" },
+	{ "xml", "Text:MarkLing:xml" },
 	{ "zip", "Package:zip" },
 };
 
@@ -90,7 +90,7 @@ std::string path_remove(std::string url){
 	if ( pos == string::npos ){
 		return "";
 	} else {
-		return url.substr(1,pos-1);
+		return url.substr(0,pos);
 	}
 
 }

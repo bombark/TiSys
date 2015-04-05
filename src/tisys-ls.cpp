@@ -54,16 +54,13 @@ int main(int argc, char** argv){
 			TiSys::listUsers(aux);
 			cout << aux;*/
 		} else {
-			TiBox aux;
-			fs.listdir(folder, url);
-			folder.sort();
-			folder.select(aux, classe);
-			printBox(aux);
+			fs.listdir(url);
+			fs.select(classe).orderby("name");
+			printBox(fs.box);
 		}
 	} else {
-		TiObj folder;
 		fs.listdir(folder, url);
-		folder.sort();
+		fs.orderby("name");
 		printBox(folder.box);
 	}
 }

@@ -44,7 +44,7 @@ int main(int argc, char** argv){
 	string    url = args.atStr("_Akk", "");
 
 	fs.listdir(folder, url);
-	folder.sort();
+	folder.orderby("name");
 	printBox(folder.box);
 }
 
