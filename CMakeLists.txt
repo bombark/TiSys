@@ -15,6 +15,16 @@ add_executable(node-class   src/node-class.cpp)
 add_executable(folder-ls    src/folder-ls.cpp)
 add_executable(tisys.ctx    src/tisys-ctx.cpp)
 
+
+
+# Examples
+add_executable(ex-listdir   examples/listdir.cpp)
+target_link_libraries(ex-listdir ${LIBS})
+
+add_executable(ex-info   examples/info.cpp)
+target_link_libraries(ex-info ${LIBS})
+
+
 #target_link_libraries(tisys.info ${LIBS})
 target_link_libraries(  tisys.ls ${LIBS})
 target_link_libraries(node-class ${LIBS})

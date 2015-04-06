@@ -51,8 +51,9 @@ string VETOR[][2] = {
 	{ "tgz", "Package:tgz" },
 	{  "ti", "Object" },
 	{ "ttf", "Font:ttf" },
-	{ "txt", "Text:txt" },	
+	{ "txt", "Text:txt" },
 	{ "wav", "Audio:wav" },
+	{ "webm", "Video:webm"},
 	{ "xml", "Text:MarkLing:xml" },
 	{ "zip", "Package:zip" },
 };
@@ -234,18 +235,19 @@ Filesystem::Filesystem(std::string cur_path, string root){
 }
 
 
-bool Filesystem::listdir(TiObj& out, std::string url){
-	this->log("listdir");
+TiObj& Filesystem::listdir(TiObj& out, std::string url){
 	out.clear();
+	this->log( __FUNCTION__ );
 
 	string real_url = this->path_set(url);
 	DIR *dp;
 	struct stat buf;
-	struct dirent *ep;    
+	struct dirent *ep;
 	dp = opendir (real_url.c_str());
 	if (dp != NULL){
 		string item, item_url;
 		while ( ep = readdir(dp) ){
+
 			if ( strcmp(ep->d_name,".")==0 || strcmp(ep->d_name,"..")==0 ) 
 				continue;
 			item = path_add(url, ep->d_name);
@@ -263,7 +265,7 @@ bool Filesystem::listdir(TiObj& out, std::string url){
 					//novo->classe = this->folder_type(item_url);
 					this->folder_sysobj( *novo, item_url );
 					novo->set( "url", item);
-					if ( !novo->has("name") )
+					if ( novo->hasnt("name") )
 						novo->set("name", ep->d_name);
 					out.box += novo;
 				}
@@ -272,20 +274,15 @@ bool Filesystem::listdir(TiObj& out, std::string url){
 		}
 		closedir(dp);
 	} else {
-		TiObj* error = new TiObj();
-		error->classe = "ERROR";
-		error->set("id", errno);
-		error->set("msg", strerror(errno));
-		error->set("url", url);
-		out.box += error;
-		return false;
+		this->set("url", url);
+		this->error(strerror(errno));
 	}
 
-	return true;
+	return out;
 }
 
 bool Filesystem::listdirtree(TiObj& out, std::string url){
-	this->log("listdirtree");
+	this->log( __FUNCTION__ );
 	TiObj buffer;
 	this->listdir(buffer, url);
 	for ( int i=0; i<buffer.box.size(); i++){
@@ -300,12 +297,13 @@ bool Filesystem::listdirtree(TiObj& out, std::string url){
 }
 
 bool Filesystem::info(TiObj& out, std::string url){
-	this->log("info");
 	out.clear();
+	this->log( __FUNCTION__ );
 	struct stat buf;
 	string file_url = this->path_set(url);
 	if ( stat(file_url.c_str(), &buf) ){
-		this->error("File " + url + " not exist");
+		this->error( strerror(errno) );
+		this->set("url", url);
 		return false;
 	} 
 
@@ -344,7 +342,7 @@ bool Filesystem::info(TiObj& out, std::string url){
 }
 
 bool Filesystem::newfolder(std::string url, mode_t mode){
-	this->log("newfolder");
+	this->log( __FUNCTION__ );
 	struct stat st;
 	int  status = 0;
 	string real_url = this->path_set(url);
@@ -359,57 +357,55 @@ bool Filesystem::newfolder(std::string url, mode_t mode){
 }
 
 bool Filesystem::newfile(std::string url, mode_t mode){
-	this->log("mkfile");
+	this->log( __FUNCTION__ );
 }
 
 bool Filesystem::newlink(std::string to, std::string in){
-	this->log("mklink");
+	this->log( __FUNCTION__ );
 }
 
 
 bool Filesystem::rm(std::string url){
-	this->log("rm");
+	this->log( __FUNCTION__ );
 	csystem("rm "+url);
 }
 
 bool Filesystem::rmdir(std::string url){
-	this->log("rmdir");
+	this->log( __FUNCTION__ );
 	csystem("rmdir "+url);
 }
 
 bool Filesystem::rmtree(std::string url){
-	this->log("rmtree");
+	this->log( __FUNCTION__ );
 	csystem("rm -rf "+url);
 }
 
 bool Filesystem::cp(std::string from, std::string to){
-	this->log("cp");
+	this->log( __FUNCTION__ );
 	csystem("cp "+from+" "+to);
 }
 
 bool Filesystem::cptree(std::string from, std::string to){
-	this->log("cptree");
+	this->log( __FUNCTION__ );
 	//csystem("cp -rf "+url);
 }
 
 bool Filesystem::mv(std::string from, std::string to){
-	this->log("mv");
+	this->log( __FUNCTION__ );
 	csystem("mv "+from+" "+to);
 }
 
 bool Filesystem::rename(std::string  old, std::string novo){
-	this->log("rename");
+	this->log( __FUNCTION__ );
 }
 
 bool Filesystem::node_exist (std::string url){
-	this->log("node_exist");
 	struct stat buffer;
 	string real_url = this->path_set(url); 
 	return ( stat(real_url.c_str(), &buffer)==0 ); 
 }
 
 bool Filesystem::node_isfolder(std::string url){
-	this->log("node_isfolder");
 	struct stat buffer;
 	string real_url = this->path_set(url);
 	if ( stat(real_url.c_str(),&buffer) == 0){
@@ -419,7 +415,6 @@ bool Filesystem::node_isfolder(std::string url){
 }
 
 bool Filesystem::node_isfile  (std::string url){
-	this->log("node_isfile");
 	struct stat buffer;
 	string real_url = this->path_set(url);
 	if ( stat(real_url.c_str(),&buffer) == 0){
@@ -460,22 +455,25 @@ std::string Filesystem::node_type(std::string url){
 }
 
 bool Filesystem::mount(){
+	this->log( __FUNCTION__ );
 }
 
 bool Filesystem::umount(){
+	this->log( __FUNCTION__ );
 }
 
 std::string Filesystem::last_error(){
-	return "["+this->status_func+"]: "+this->status_msg;
+	return "["+this->status_func+"]: "+this->atStr("_msg");
 }
 
 void Filesystem::error(std::string msg){
-	this->status_msg = msg;
+	this->classe = "Error";
+	this->set("_msg", msg);
 }
 
 void Filesystem::log(std::string function){
 	this->status_func = function;
-	this->status_msg  = "";
+	this->set("_msg","");
 }
 
 std::string Filesystem::file_type  (std::string url){
@@ -516,6 +514,8 @@ void Filesystem::folder_sysobj(TiObj& out, std::string url){
 	}
 	if ( out.classe == "" ){
 		out.set("class", "Folder");
+	} else {
+		out.set("class", "Folder:"+out.classe);
 	}
 }
 

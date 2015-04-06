@@ -28,15 +28,14 @@ class Filesystem : public TiObj {
 	std::string root;
 	std::string cur_path;
 	std::string status_func;
-	std::string status_msg;
 	int         status_code;
 
   public:
 	Filesystem();
 	Filesystem(std::string cur_path, string root="");
 
-	bool        listdir (TiObj& out, std::string url=".");
-	inline bool listdir (std::string url="."){return this->listdir(*this, url);}
+	       TiObj& listdir (TiObj& out, std::string url=".");
+	inline TiObj& listdir (std::string url="."){return this->listdir(*this, url);}
 
 	bool listdirtree (TiObj& out, std::string url=".");
 	bool info        (TiObj& out, std::string url=".");
