@@ -2,6 +2,8 @@
 #include "tisys.hpp"
 
 
+using namespace std;
+
 int main(int argc, char** argv){
 	Filesystem fs;
 	string url = ".";
