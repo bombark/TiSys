@@ -25,7 +25,7 @@ int  csystem(std::string cmd);
 
 
 // Encontrar um lugar melhor para esta funcao
-void tisys_link(TiObj& node, string self_url);
+void tisys_link(TiObj& node, std::string self_url);
 inline void tisys_link(TiObj& node){tisys_link(node,node.atStr("url"));}
 
 
@@ -40,7 +40,7 @@ class Filesystem : public TiObj {
 
   public:
 	Filesystem();
-	Filesystem(std::string cur_path, string root="");
+	Filesystem(std::string cur_path, std::string root="");
 
 	       TiObj& listdir (TiObj& out, std::string url=".");
 	inline TiObj& listdir (std::string url="."){return this->listdir(*this, url);}
