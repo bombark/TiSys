@@ -1,6 +1,8 @@
 #include <iostream>
 #include "../src/tisys.hpp"
 
+using namespace std;
+
 
 int main(int argc, char** argv){
 	cout << "Example" <<endl;
