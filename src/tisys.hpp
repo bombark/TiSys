@@ -23,6 +23,14 @@ void tiurl_sysobj (TiObj& out, std::string tiurl);
 
 int  csystem(std::string cmd);
 
+
+// Encontrar um lugar melhor para esta funcao
+void tisys_link(TiObj& node, string self_url);
+inline void tisys_link(TiObj& node){tisys_link(node,node.atStr("url"));}
+
+
+
+
 class Filesystem : public TiObj {
   private:
 	std::string root;

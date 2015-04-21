@@ -61,6 +61,26 @@ string VETOR[][2] = {
 /*-------------------------------------------------------------------------------------*/
 
 
+
+
+void tisys_link(TiObj& node, string self_url){
+	/*for (int i=0; i<node.length(); i++){
+		TiVar& var = node[i];
+		if ( var.isObj() ){
+			tisys_link(var.atObj(), self_url);
+		} else if ( var.isStr() ){
+			string url = var.atStr();
+			if ( url[0] == '&' ){
+				var = path_add(self_url, url.c_str()+1 );    // url.c_str()+1: remove '&'
+			} else if ( url[0] == '@' ){
+				// pensar no que fazer
+			}
+		}
+	}*/
+}
+
+
+
 /*=====================================================================================*/
 
 int csystem(std::string cmd){
@@ -267,6 +287,7 @@ TiObj& Filesystem::listdir(TiObj& out, std::string url){
 					novo->set( "url", item);
 					if ( novo->hasnt("name") )
 						novo->set("name", ep->d_name);
+
 					out.box += novo;
 				}
 			}
