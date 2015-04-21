@@ -16,6 +16,8 @@
 #include <algorithm>
 #include <string>
 
+using namespace std;
+
 
 // Usado em Filesystem::file_type
 string VETOR[][2] = {
