@@ -81,6 +81,7 @@ class Filesystem : public TiObj {
 	std::string last_error();
 	
 	std::string file_type  (std::string url);
+	std::string file_mime  (std::string url);
 	std::string folder_type(std::string url);
 	void folder_sysobj(TiObj& out, std::string url);
 

@@ -2,8 +2,8 @@
 
 #include "tisys.hpp"
 #include <iostream>
-#include <stdio.h> 
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -20,45 +20,7 @@ using namespace std;
 
 
 // Usado em Filesystem::file_type
-string VETOR[][2] = {
-	{ "avi", "Video:avi" },
-	{ "bmp", "Image:bmp" },
-	{ "bz2", "Package:bz2" },
-	{   "c", "Text:Code:c"   },
-	{ "cpp", "Text:Code:cpp" },
-	{ "css", "Text:MarkLing:css" },
-	{ "dcm", "Image:dcm" },
-	{ "deb", "Package:deb" },
-	{ "flv", "Video:flv" },
-	{ "gif", "Image:gif" },
-	{  "gz", "Package:gz" },
-	{"html", "Text:MarkLing:html"},
-	{"java", "Text:Code:java"},
-	{"jpeg", "Image:jpg" },
-	{ "jpg", "Image:jpg" },
-	{  "js", "Text:Code:js"},
-	{"json", "MarkLing:json" },
-	{ "mp3", "Audio:mp3" },
-	{ "mp4", "Video:mp4" },
-	{ "ogg", "Audio:ogg" },
-	{ "odt", "Document:odt"},
-	{ "pas", "Text:Code:pas" },
-	{ "pdf", "Book:pdf" },	
-	{ "php", "Text:Code:php"},
-	{ "png", "Image:png" },
-	{  "py", "Text:Code:py"  },
-	{ "rar", "Package:rar" },
-	{  "sh", "Text:Code:sh"},
-	{ "tex", "Text:MarkLing:tex" },
-	{ "tgz", "Package:tgz" },
-	{  "ti", "Object" },
-	{ "ttf", "Font:ttf" },
-	{ "txt", "Text:txt" },
-	{ "wav", "Audio:wav" },
-	{ "webm", "Video:webm"},
-	{ "xml", "Text:MarkLing:xml" },
-	{ "zip", "Package:zip" },
-};
+#include "types.h"
 
 /*-------------------------------------------------------------------------------------*/
 
@@ -151,7 +113,7 @@ std::string path_context (std::string classe, std::string _url){
 		if ( aux.is(classe) ){
 			break;
 		}
-		
+
 		if ( url == "/" ){
 			return "";
 		} else {
@@ -175,7 +137,7 @@ void tiurl_explode(TiObj& out, std::string tiurl){
 	out.clear();
 	if ( tiurl.size() == 0 )
 		return;
-	
+
 	// Explode the URL in all the '/'
 	int i=0, base=0;
 	string buf, name;
@@ -240,9 +202,10 @@ void tiurl_explode(TiObj& out, std::string tiurl){
 
 
 void tiurl_sysobj (TiObj& out, std::string tiurl){
-	out.clear();
 	out.loadFile( path_add(tiurl, ".sysobj.ti") );
 }
+
+
 
 /*-------------------------------------------------------------------------------------*/
 
@@ -270,7 +233,7 @@ TiObj& Filesystem::listdir(TiObj& out, std::string url){
 		string item, item_url;
 		while ( ep = readdir(dp) ){
 
-			if ( strcmp(ep->d_name,".")==0 || strcmp(ep->d_name,"..")==0 ) 
+			if ( strcmp(ep->d_name,".")==0 || strcmp(ep->d_name,"..")==0 )
 				continue;
 			item = path_add(url, ep->d_name);
 			item_url = path_add(real_url, ep->d_name);
@@ -328,7 +291,7 @@ bool Filesystem::info(TiObj& out, std::string url){
 		this->error( strerror(errno) );
 		this->set("url", url);
 		return false;
-	} 
+	}
 
 	// Set node variables
 	struct tm* clock;
@@ -344,15 +307,15 @@ bool Filesystem::info(TiObj& out, std::string url){
 	out["size_blocks"] = (long int)buf.st_blocks;
 	out["block_size"]  = (long int)buf.st_blksize;
 	clock = gmtime(&(buf.st_atime));
-	sprintf(strbuf,"%d/%d/%d,%d:%d:%d",clock->tm_year+1900,clock->tm_mon+1,clock->tm_mday,clock->tm_hour,clock->tm_min,clock->tm_sec); 
+	sprintf(strbuf,"%d/%d/%d,%d:%d:%d",clock->tm_year+1900,clock->tm_mon+1,clock->tm_mday,clock->tm_hour,clock->tm_min,clock->tm_sec);
 	out["atime"] = strbuf;
 	clock = gmtime(&(buf.st_mtime));
-	sprintf(strbuf,"%d/%d/%d,%d:%d:%d",clock->tm_year+1900,clock->tm_mon+1,clock->tm_mday,clock->tm_hour,clock->tm_min,clock->tm_sec); 
+	sprintf(strbuf,"%d/%d/%d,%d:%d:%d",clock->tm_year+1900,clock->tm_mon+1,clock->tm_mday,clock->tm_hour,clock->tm_min,clock->tm_sec);
 	out["mtime"] = strbuf;
 	clock = gmtime(&(buf.st_ctime));
-	sprintf(strbuf,"%d/%d/%d,%d:%d:%d",clock->tm_year+1900,clock->tm_mon+1,clock->tm_mday,clock->tm_hour,clock->tm_min,clock->tm_sec); 
+	sprintf(strbuf,"%d/%d/%d,%d:%d:%d",clock->tm_year+1900,clock->tm_mon+1,clock->tm_mday,clock->tm_hour,clock->tm_min,clock->tm_sec);
 	out["ctime"] = strbuf;
-	
+
 	// Get node type
 	if (S_ISREG (buf.st_mode)){
 		out.classe = this->file_type(file_url);
@@ -424,8 +387,8 @@ bool Filesystem::rename(std::string  old, std::string novo){
 
 bool Filesystem::node_exist (std::string url){
 	struct stat buffer;
-	string real_url = this->path_set(url); 
-	return ( stat(real_url.c_str(), &buffer)==0 ); 
+	string real_url = this->path_set(url);
+	return ( stat(real_url.c_str(), &buffer)==0 );
 }
 
 bool Filesystem::node_isfolder(std::string url){
@@ -503,20 +466,45 @@ std::string Filesystem::file_type  (std::string url){
 	string ext = url.substr(url.find_last_of(".") + 1);
 	std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 	int ini = 0;
-	int end = sizeof(VETOR)/(2*sizeof(string));
+	int end = sizeof(VETOR)/(3*sizeof(string));
 	while (true){
 		if ( ini >= end ){
-			return "File";
+			return Join("File:%s").at(ext).ok();
 		}
 		int meio = (ini + end)/2;
 		if ( ext == VETOR[meio][0] ){
-			return string("File:")+VETOR[meio][1];
+			if ( VETOR[meio][2] != "" )
+				return Join("File:%s:%s").at(VETOR[meio][2]).at(ext).ok();
+			else
+				return Join("File:%s").at(ext).ok();
 		} else if ( ext > VETOR[meio][0] ){
 			ini = meio+1;
 		} else
 			end = meio;
 	}
 }
+
+std::string Filesystem::file_mime  (std::string url){
+	string ext = url.substr(url.find_last_of(".") + 1);
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+	int ini = 0;
+	int end = sizeof(VETOR)/(3*sizeof(string));
+	while (true){
+		if ( ini >= end ){
+			return "text/plain";
+		}
+		int meio = (ini + end)/2;
+		if ( ext == VETOR[meio][0] ){
+			return VETOR[meio][1];
+		} else if ( ext > VETOR[meio][0] ){
+			ini = meio+1;
+		} else
+			end = meio;
+	}
+}
+
+
+
 
 std::string Filesystem::folder_type(std::string url){
 	string descfile = path_add(url,".sysobj.ti");
@@ -537,7 +525,7 @@ void Filesystem::folder_sysobj(TiObj& out, std::string url){
 	}
 	if ( out.classe == "" ){
 		out.set("class", "Folder");
-	} else {
+	} else if ( !out.is("Folder") ){
 		out.set("class", "Folder:"+out.classe);
 	}
 }
@@ -633,9 +621,9 @@ void tiurl_explode(string& out_classe, string& out_name, string ptiurl){
 int search_file(string& out, string ptiurl){
 	TiObj folder;
 	TiSys::info(folder, out);
-	string classe,name; 
+	string classe,name;
 	tiurl_explode(classe,name,ptiurl);
-	
+
 	if ( ptiurl[0] == '%' ){
 		string realpath = folder["url"].str;
 		out = TiSys::getCtx(ptiurl.substr(1), realpath);
@@ -660,7 +648,7 @@ int search_file(string& out, string ptiurl){
 					return 0;
 				}
 			}
-			
+
 			string aux;
 			for ( int i=0; i<folder.box.size(); i++ ){
 				TiObj& node = folder.box[i];
@@ -669,8 +657,8 @@ int search_file(string& out, string ptiurl){
 					search_file(aux, ptiurl);
 				}
 			}
-			
-			return 1;	
+
+			return 1;
 		}
 	}
 }
@@ -680,8 +668,8 @@ int search_file(string& out, string ptiurl){
 string TiSys::getUrl(string tiurl){
 	if ( tiurl.size() == 0 )
 		return "";
-	
-	
+
+
 	// Explode a tiurl
 	int i = (tiurl[0]=='@')?1:0;
 	char c;
@@ -700,11 +688,11 @@ string TiSys::getUrl(string tiurl){
 	for (i=0;i<v_url.size();i++){
 		cout << v_url[i] << endl;
 	}
-	
+
 	// Processa o tiurl
 	if ( v_url.size() == 0 )
 		return "";
-	
+
 	string base = ".";
 	for (i=0; i<v_url.size(); i++){
 		int error = search_file(base, v_url[i]);
@@ -714,31 +702,12 @@ string TiSys::getUrl(string tiurl){
 		} else {
 			cout << "OK\n";
 		}
-		
+
 	}
-	
-	
+
+
 	return "";
 }
 
 
 /*-------------------------------------------------------------------------------------*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
