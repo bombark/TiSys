@@ -75,7 +75,13 @@ std::string path_remove(std::string url){
 	if ( pos == string::npos ){
 		return "";
 	} else {
-		return url.substr(0,pos);
+		if ( pos == 0 ){
+			if ( url.size() > 1 )
+				return url.substr(0,pos+1);
+			else
+				return "";
+		} else 
+			return url.substr(0,pos);
 	}
 
 }
