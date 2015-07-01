@@ -398,7 +398,7 @@ string VETOR[][3] = {
 	{"texinfo","application/x-texinfo",""},
 	{"text","text/plain","Text"},
 	{"tgz","application/x-compressed",""},
-	{"ti","text/plain","File:Object"},
+	{"ti","text/plain","Object"},
 	{"tif","image/tiff","Image"},
 	{"tiff","image/tiff","Image"},
 	{"tr","application/x-troff",""},
