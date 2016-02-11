@@ -475,14 +475,14 @@ std::string Filesystem::file_type  (std::string url){
 	int end = sizeof(VETOR)/(3*sizeof(string));
 	while (true){
 		if ( ini >= end ){
-			return Join("File:%s").at(ext).ok();
+			return Join("File:%s").at(ext).ok;
 		}
 		int meio = (ini + end)/2;
 		if ( ext == VETOR[meio][0] ){
 			if ( VETOR[meio][2] != "" )
-				return Join("File:%s:%s").at(VETOR[meio][2]).at(ext).ok();
+				return Join("File:%s:%s").at(VETOR[meio][2]).at(ext).ok;
 			else
-				return Join("File:%s").at(ext).ok();
+				return Join("File:%s").at(ext).ok;
 		} else if ( ext > VETOR[meio][0] ){
 			ini = meio+1;
 		} else
