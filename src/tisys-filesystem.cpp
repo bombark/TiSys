@@ -247,7 +247,7 @@ TiObj& Filesystem::listdir(TiObj& out, std::string url){
 				if (S_ISREG (buf.st_mode) ){
 					string tmp = ep->d_name;
 					TiObj *novo = new TiObj();
-					novo->classe = this->file_type(item_url);
+					novo->classe = this->file_type(ep->d_name);
 					novo->set("name", tmp);
 					novo->set( "url", item);
 					out.box += novo;
@@ -469,20 +469,31 @@ void Filesystem::log(std::string function){
 }
 
 std::string Filesystem::file_type  (std::string url){
-	string ext = url.substr(url.find_last_of(".") + 1);
+	struct stat sb;
+	std::string base = "File";
+	if (stat(url.c_str(), &sb) == 0 && sb.st_mode & S_IXUSR)
+		base += ":Exec";
+
+	int pos = url.find_last_of(".");
+	if ( pos == string::npos || pos == 0 ){
+
+		return "File";
+	}
+
+	string ext = url.substr( pos + 1);
 	std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 	int ini = 0;
 	int end = sizeof(VETOR)/(3*sizeof(string));
 	while (true){
 		if ( ini >= end ){
-			return Join("File:%s").at(ext).ok();
+			return Join("%s:%s").at(base).at(ext).ok;
 		}
 		int meio = (ini + end)/2;
 		if ( ext == VETOR[meio][0] ){
 			if ( VETOR[meio][2] != "" )
-				return Join("File:%s:%s").at(VETOR[meio][2]).at(ext).ok();
+				return Join("%s:%s:%s").at(base).at(VETOR[meio][2]).at(ext).ok;
 			else
-				return Join("File:%s").at(ext).ok();
+				return Join("%s:%s").at(base).at(ext).ok;
 		} else if ( ext > VETOR[meio][0] ){
 			ini = meio+1;
 		} else

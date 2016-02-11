@@ -1,0 +1,5 @@
+class=proj:cpp:lib
+name="libtisys"
+description="    Library to handle with filesystem"
+
+Depend{name='libtiobj'}
