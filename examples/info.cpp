@@ -8,11 +8,16 @@ int main(int argc, char** argv){
 	cout << "Example" <<endl;
 	Filesystem fs;
 
+	TiObj res(0);
 	if ( argc == 1 )
-		fs.info(".");
+		res = fs.info(".");
 	else
-		fs.info( argv[1] );
+		res = fs.info( argv[1] );
 
-	cout << fs;
+	cout << res;
+	
+	res = fs.ls(".");
+	cout << res;
+	
 	return 0;
 }

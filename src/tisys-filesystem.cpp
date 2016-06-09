@@ -115,7 +115,7 @@ std::string path_context (std::string classe, std::string _url){
 	while (true){
 		if ( url.size() == 0 )
 			return "";
-		aux.classe = fs.folder_type(url);
+		aux.set( "class", fs.folder_type(url) );
 		if ( aux.is(classe) ){
 			break;
 		}
@@ -139,8 +139,8 @@ std::string path_context (std::string classe, std::string _url){
 }
 
 
-void tiurl_explode(TiObj& out, std::string tiurl){
-	out.clear();
+/*TiObj tiurl_explode(std::string tiurl){
+	TiObj out;
 	if ( tiurl.size() == 0 )
 		return;
 
@@ -204,11 +204,13 @@ void tiurl_explode(TiObj& out, std::string tiurl){
 		out.box += aux;
 	}
 	cout << out;
-}
+}*/
 
 
-void tiurl_sysobj (TiObj& out, std::string tiurl){
-	out.loadFile( path_add(tiurl, ".sysobj.ti") );
+TiObj tiurl_sysobj (std::string tiurl){
+	TiObj out;
+	out.load( path_add(tiurl, ".sysobj.ti") );
+	return out;
 }
 
 
@@ -226,8 +228,8 @@ Filesystem::Filesystem(std::string cur_path, string root){
 }
 
 
-TiObj& Filesystem::listdir(TiObj& out, std::string url){
-	out.clear();
+TiObj Filesystem::ls (std::string url) {
+	TiObj out;
 	this->log( __FUNCTION__ );
 
 	string real_url = this->path_set(url);
@@ -246,100 +248,94 @@ TiObj& Filesystem::listdir(TiObj& out, std::string url){
 			if ( stat(item_url.c_str(), &buf) != -1 ){
 				if (S_ISREG (buf.st_mode) ){
 					string tmp = ep->d_name;
-					TiObj *novo = new TiObj();
-					novo->classe = this->file_type(ep->d_name);
-					novo->set("name", tmp);
-					novo->set( "url", item);
-					out.box += novo;
+					TiObj novo;
+					novo.set("class", this->file_type(ep->d_name) );
+					novo.set("name", tmp);
+					novo.set( "url", item);
+					out.box() += novo;
 				} else if (S_ISDIR (buf.st_mode) ){
-					TiObj *novo = new TiObj();
-					//novo->classe = this->folder_type(item_url);
-					this->folder_sysobj( *novo, item_url );
-					novo->set( "url", item);
-					if ( novo->hasnt("name") )
-						novo->set("name", ep->d_name);
-
-					out.box += novo;
+					TiObj novo;
+					this->folder_sysobj( novo, item_url );
+					novo.set( "url", item);
+					if ( !novo.has("name") )
+						novo.set("name", ep->d_name);
+					out.box() += novo;
 				}
 			}
 
 		}
 		closedir(dp);
 	} else {
-		this->set("url", url);
-		this->error(strerror(errno));
+		return this->error( strerror(errno), url );
 	}
 
 	return out;
 }
 
-bool Filesystem::listdirtree(TiObj& out, std::string url){
-	this->log( __FUNCTION__ );
-	TiObj buffer;
-	this->listdir(buffer, url);
-	for ( int i=0; i<buffer.box.size(); i++){
-		TiObj& node = buffer.box[i];
+bool Filesystem::ls_r( TiObj out, std::string url ){
+	TiObj buffer = this->ls(url);
+	for ( int i=0; i<buffer.size(); i++){
+		TiObj node = buffer.box(i);
 		if ( node.is("Folder") ){
-			this->listdirtree( out, path_add(url, node["name"].str) );
+			this->ls_r( out, node.atStr("url") );
 		} else {
-			out.box += node;
+			out.box() += node;
 		}
 	}
 	return true;
 }
 
-bool Filesystem::info(TiObj& out, std::string url){
-	out.clear();
-	this->log( __FUNCTION__ );
+TiObj Filesystem::info(std::string url){
+	TiObj out;
 	struct stat buf;
 	string file_url = this->path_set(url);
 	if ( stat(file_url.c_str(), &buf) ){
-		this->error( strerror(errno) );
-		this->set("url", url);
-		return false;
+		return this->error( strerror(errno), url );
 	}
 
 	// Set node variables
 	struct tm* clock;
 	char strbuf[1024];
 	int permission = ((buf.st_mode & S_IRWXU) >> 6)*100 + ((buf.st_mode & S_IRWXG) >> 3)*10 + ((buf.st_mode & S_IRWXO));
-	out["permission"] = (long int) permission;
-	out["inode"] = (long int) buf.st_ino;
-	out["name"] = path_last(file_url);
-	out["url"] = path_absolute(file_url);
-	out["uid"] = (long int) buf.st_uid;
-	out["gid"] = (long int)buf.st_gid;
-	out["size_bytes"]  = (long int)buf.st_size;
-	out["size_blocks"] = (long int)buf.st_blocks;
-	out["block_size"]  = (long int)buf.st_blksize;
+
+	out.set("permission", (long int) permission );
+	out.set("inode", (long int) buf.st_ino );
+	out.set("name", path_last(file_url) );
+	out.set("url", path_absolute(file_url) );
+	out.set("uid", (long int) buf.st_uid );
+	out.set("gid", (long int)buf.st_gid );
+	out.set("size_bytes",  (long int)buf.st_size );
+	out.set("size_blocks", (long int)buf.st_blocks );
+	out.set("block_size",  (long int)buf.st_blksize );
+
 	clock = gmtime(&(buf.st_atime));
 	sprintf(strbuf,"%d/%d/%d,%d:%d:%d",clock->tm_year+1900,clock->tm_mon+1,clock->tm_mday,clock->tm_hour,clock->tm_min,clock->tm_sec);
-	out["atime"] = strbuf;
+	out.set("atime", strbuf);
 	clock = gmtime(&(buf.st_mtime));
 	sprintf(strbuf,"%d/%d/%d,%d:%d:%d",clock->tm_year+1900,clock->tm_mon+1,clock->tm_mday,clock->tm_hour,clock->tm_min,clock->tm_sec);
-	out["mtime"] = strbuf;
+	out.set("mtime", strbuf);
 	clock = gmtime(&(buf.st_ctime));
 	sprintf(strbuf,"%d/%d/%d,%d:%d:%d",clock->tm_year+1900,clock->tm_mon+1,clock->tm_mday,clock->tm_hour,clock->tm_min,clock->tm_sec);
-	out["ctime"] = strbuf;
+	out.set("ctime", strbuf);
 
 	// Get node type
 	if (S_ISREG (buf.st_mode)){
-		out.classe = this->file_type(file_url);
+		out.classe() = this->file_type(file_url);
 	} else if (S_ISLNK(buf.st_mode)){
-		out.classe = "Link";
+		out.classe() = "Link";
 	} else if (S_ISDIR (buf.st_mode)){
-		out.classe = this->folder_type(file_url);
+		out.classe() = this->folder_type(file_url);
 	}
-	return true;
+	return out;
 }
 
-bool Filesystem::newfolder(std::string url, mode_t mode){
+bool Filesystem::mkdir(std::string url, mode_t mode){
 	this->log( __FUNCTION__ );
 	struct stat st;
 	int  status = 0;
 	string real_url = this->path_set(url);
 	if (stat(real_url.c_str(), &st) != 0){
-		if (mkdir(real_url.c_str(), mode) != 0 && errno != EEXIST)
+		if (::mkdir(real_url.c_str(), mode) != 0 && errno != EEXIST)
 			status = -1;
 	} else if (!S_ISDIR(st.st_mode)){
 		errno = ENOTDIR;
@@ -348,11 +344,11 @@ bool Filesystem::newfolder(std::string url, mode_t mode){
 	return true;
 }
 
-bool Filesystem::newfile(std::string url, mode_t mode){
+bool Filesystem::mknode(std::string url, mode_t mode){
 	this->log( __FUNCTION__ );
 }
 
-bool Filesystem::newlink(std::string to, std::string in){
+bool Filesystem::ln(std::string to, std::string in){
 	this->log( __FUNCTION__ );
 }
 
@@ -367,17 +363,13 @@ bool Filesystem::rmdir(std::string url){
 	csystem("rmdir "+url);
 }
 
-bool Filesystem::rmtree(std::string url){
-	this->log( __FUNCTION__ );
-	csystem("rm -rf "+url);
-}
 
 bool Filesystem::cp(std::string from, std::string to){
 	this->log( __FUNCTION__ );
 	csystem("cp "+from+" "+to);
 }
 
-bool Filesystem::cptree(std::string from, std::string to){
+bool Filesystem::cp_r(std::string from, std::string to){
 	this->log( __FUNCTION__ );
 	//csystem("cp -rf "+url);
 }
@@ -391,7 +383,7 @@ bool Filesystem::rename(std::string  old, std::string novo){
 	this->log( __FUNCTION__ );
 }
 
-bool Filesystem::node_exist (std::string url){
+bool Filesystem::exists (std::string url){
 	struct stat buffer;
 	string real_url = this->path_set(url);
 	return ( stat(real_url.c_str(), &buffer)==0 );
@@ -454,18 +446,18 @@ bool Filesystem::umount(){
 	this->log( __FUNCTION__ );
 }
 
-std::string Filesystem::last_error(){
-	return "["+this->status_func+"]: "+this->atStr("_msg");
-}
 
-void Filesystem::error(std::string msg){
-	this->classe = "Error";
-	this->set("_msg", msg);
+TiObj Filesystem::error(std::string msg, std::string url){
+	TiObj out;
+	out.set("class", "Error");
+	out.set("msg", msg);
+	out.set("url", url);
+	return out;
 }
 
 void Filesystem::log(std::string function){
-	this->status_func = function;
-	this->set("_msg","");
+	//this->status_func = function;
+	//this->set("_msg","");
 }
 
 std::string Filesystem::file_type  (std::string url){
@@ -525,10 +517,10 @@ std::string Filesystem::file_mime  (std::string url){
 
 std::string Filesystem::folder_type(std::string url){
 	string descfile = path_add(url,".sysobj.ti");
-	if ( this->node_exist(descfile) ){
+	if ( this->exists(descfile) ){
 		TiObj meta;
-		meta.loadFile(descfile);
-		return string("Folder:")+meta.classe;
+		meta.load(descfile);
+		return string("Folder:")+meta.classe();
 	} else {
 		return "Folder";
 	}
@@ -537,13 +529,13 @@ std::string Filesystem::folder_type(std::string url){
 void Filesystem::folder_sysobj(TiObj& out, std::string url){
 	out.clear();
 	string descfile = path_add(url,".sysobj.ti");
-	if ( this->node_exist(descfile) ){
-		out.loadFile(descfile);
+	if ( this->exists(descfile) ){
+		out.load(descfile);
 	}
-	if ( out.classe == "" ){
+	if ( out.classe() == "" ){
 		out.set("class", "Folder");
 	} else if ( !out.is("Folder") ){
-		out.set("class", "Folder:"+out.classe);
+		out.set("class", "Folder:"+out.classe());
 	}
 }
 

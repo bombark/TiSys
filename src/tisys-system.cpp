@@ -5,33 +5,30 @@ using namespace std;
 
 /*=====================================================================================*/
 
-bool System::listDevice           (TiObj& out){
+TiObj System::listDevice() {
 }
 	
-bool System::listDeviceBlock      (TiObj& out){
-	TiObj raw;
+TiObj System::listDeviceBlock() {
+	TiObj raw, out;
 	FILE* fd;
 	long int buf_int;
 	char buf_char[1024];
-	out.clear();
 	//TiSys::info(raw, "/sys/class/block");
 
-	for (int i=0; i<raw.box.size(); i++){
-		
-		string block_url = raw.box[i].atStr("url");
-		TiObj& block = *(new TiObj());
-
+	for (int i=0; i<raw.size(); i++){
+		TiObj block;
+		string block_url = raw.box(i).atStr("url");
 		fd = fopen(path_add(block_url,"partition").c_str(), "r");
 		if ( fd ){
 			buf_int = 0;
 			fscanf(fd, "%s", buf_char);
 			if ( buf_char )
-				block.classe = "Device:Block:Partition";
+				block.set ("class","Device:Block:Partition");
 			else
-				block.classe = "Device:Block";
+				block.set ("class","Device:Block");
 			fclose(fd);
 		} else
-			block.classe = "Device:Block";
+			block.set ("class","Device:Block");
 
 		block["name"] = path_last(block_url);
 		// Get size of block
@@ -67,37 +64,38 @@ bool System::listDeviceBlock      (TiObj& out){
 		}
 		block["is_readonly"] = buf_int;
 
-		out.box += block;
+		out.box() += block;
 	}
 
 	cout << out;
 }
 
-bool System::listDeviceEthernet   (TiObj& out){
+TiObj System::listDeviceEthernet(){
 }
 
-bool System::listDeviceVideo      (TiObj& out){
+TiObj System::listDeviceVideo(){
 }
 
-bool System::listDeviceInputVideo (TiObj& out){
+TiObj System::listDeviceInputVideo(){
 }
 
-bool System::listDeviceAudio      (TiObj& out){
+TiObj System::listDeviceAudio(){
 }
 
-bool System::listDeviceInputAudio (TiObj& out){
+TiObj System::listDeviceInputAudio(){
 }
 
-bool System::listUser (TiObj& out){
-	out.clear();
+TiObj System::listUser(){
+	TiObj out;
 	FILE* fd = fopen("/etc/passwd", "r");
 	if ( !fd ){
-		return false;
+		return out;//false;
 	}
 	char c, token[1024];
 	int cursor=0, state=0;
-	TiObj* cur = new TiObj();
-	cur->classe = "User";
+	TiObj cur;
+	cur.set ("class","User");
+
 	char fields[7][10] = {"name","isshadow","uid","gid","info","home","command"};
 	while ( fscanf(fd, "%c", &c) != EOF ){
 		if ( c == ':' ){
@@ -105,48 +103,48 @@ bool System::listUser (TiObj& out){
 			cursor = 0;
 			if ( state == 0 ){
 				if ( strcmp(token, "root") == 0 ){
-					cur->classe = "User:Root";
+					cur.set ("class","User:Root");
 				}
-				cur->set(fields[state], token);
+				cur.set(fields[state], token);
 			} else if ( state == 1 ){	
 				if ( strcmp(token, "x") == 0 ){
-					cur->set(fields[state], "yes");
+					cur.set (fields[state],"y");
 				} else
-					cur->set(fields[state], "no");
+					cur.set (fields[state],"n");
 			} else if ( state == 2 || state ==3 ){
-				cur->set(fields[state], atoi(token));
+				cur.set(fields[state], atoi(token));
 			} else
-				cur->set(fields[state], token);
+				cur.set(fields[state], token);
 			state += 1;
 			if ( state > 7 ){
-				return false;
+				return out;//false;
 			}
 		} else if ( c == '\n' ){
 			if ( state < 7 ){
 				token[cursor] = '\0';
-				cur->set(fields[state], token);
+				cur.set(fields[state], token);
 			}
 			state = cursor = 0;
-			if ( cur->atInt("uid") >= 500 && cur->atInt("uid") < 65534 ){ 
-				cur->classe = "User:Login";				
+			if ( cur.atInt("uid") >= 500 && cur.atInt("uid") < 65534 ){ 
+				cur.set (fields[state],"User:Login");
 			} else
-				cur->classe = "User";
-			out.box += cur;			
-			cur = new TiObj();
+				cur.set (fields[state],"User");
+			out.box() += cur;
+			cur.create();
 		} else {
 			token[cursor++] = c;
 			if (cursor >= 1024){
-				return false;
+				return out;//false;
 			}
 		}
 	}
-	return true;
+	return out;//true;
 }
 
-bool System::listCmd  (TiObj& out){
+TiObj System::listCmd(){
 }
 
-bool System::listWifi (TiObj& out){
+TiObj System::listWifi(){
 }
 
 /*-------------------------------------------------------------------------------------*/

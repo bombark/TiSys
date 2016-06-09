@@ -18,7 +18,7 @@ std::string path_absolute(std::string url);
 std::string path_context (std::string classe, std::string _url=".");
 
 
-void tiurl_explode(TiObj& out, std::string tiurl);
+//void tiurl_explode(TiObj& out, std::string tiurl);
 void tiurl_sysobj (TiObj& out, std::string tiurl);
 
 int  csystem(std::string cmd);
@@ -31,7 +31,7 @@ inline void tisys_link(TiObj& node){tisys_link(node,node.atStr("url"));}
 
 
 
-class Filesystem : public TiObj {
+class Filesystem {
   private:
 	std::string root;
 	std::string cur_path;
@@ -42,31 +42,29 @@ class Filesystem : public TiObj {
 	Filesystem();
 	Filesystem(std::string cur_path, std::string root="");
 
-	       TiObj& listdir (TiObj& out, std::string url=".");
-	inline TiObj& listdir (std::string url="."){return this->listdir(*this, url);}
+	TiObj ls   (std::string url=".");
+	bool  ls_r ( TiObj out, std::string url );
+	inline TiObj ls_r (std::string url="."){TiObj out; this->ls_r(out,url); return out;}
+	TiObj info (std::string url=".");
 
-	bool listdirtree (TiObj& out, std::string url=".");
-	bool info        (TiObj& out, std::string url=".");
-	inline bool info (std::string url="."){return this->info(*this, url);}
 
 	//bool select(TiObj& out, string query, string url);
 	
-	bool newfolder(std::string url, mode_t mode=0755);
-	bool newfile  (std::string url, mode_t mode=0644);
-	bool newlink(std::string to, std::string in="");
+	bool mkdir  (std::string url, mode_t mode=0755);
+	bool mknode (std::string url, mode_t mode=0644);
+	bool ln     (std::string to, std::string in="");
 
 	
 	bool rm    (std::string url);
 	bool rmdir (std::string url);
-	bool rmtree(std::string url);
+	bool rm_r  (std::string url);
 
-	bool cp    (std::string from, std::string to);
-	bool cptree(std::string from, std::string to);
-	bool mv    (std::string from, std::string to);
-	bool rename(std::string  old, std::string novo);
+	bool cp     (std::string from, std::string to);
+	bool cp_r   (std::string from, std::string to);
+	bool mv     (std::string from, std::string to);
+	bool rename (std::string  old, std::string novo);
 	
-	bool node_exist   (std::string url);
-	inline bool exists   (std::string url){return this->node_exist(url);}
+	bool exists (std::string url);
 
 	bool node_isfolder(std::string url);
 	bool node_isfile  (std::string url);
@@ -78,7 +76,6 @@ class Filesystem : public TiObj {
 	bool mount ();
 	bool umount();
 	
-	std::string last_error();
 	
 	std::string file_type  (std::string url);
 	std::string file_mime  (std::string url);
@@ -86,7 +83,7 @@ class Filesystem : public TiObj {
 	void folder_sysobj(TiObj& out, std::string url);
 
   private:
-	void error(std::string msg);
+	TiObj error(std::string msg, std::string url);
 	void log  (std::string function);
 	std::string path_set   (std::string url);
 };
@@ -106,17 +103,17 @@ class Objsystem : public Filesystem {
 
 
 class System {
-	bool listDevice           (TiObj& out);
-	bool listDeviceBlock      (TiObj& out);
-	bool listDeviceEthernet   (TiObj& out);
-	bool listDeviceVideo      (TiObj& out);
-	bool listDeviceInputVideo (TiObj& out);
-	bool listDeviceAudio      (TiObj& out);
-	bool listDeviceInputAudio (TiObj& out);
+	TiObj listDevice           ();
+	TiObj listDeviceBlock      ();
+	TiObj listDeviceEthernet   ();
+	TiObj listDeviceVideo      ();
+	TiObj listDeviceInputVideo ();
+	TiObj listDeviceAudio      ();
+	TiObj listDeviceInputAudio ();
 	
-	bool listUser (TiObj& out);
-	bool listCmd  (TiObj& out);
-	bool listWifi (TiObj& out);
+	TiObj listUser ();
+	TiObj listCmd  ();
+	TiObj listWifi ();
 	
 	//bool listLib();
 };
