@@ -2,6 +2,9 @@ dest    =build/tisys
 dest-bin=$(dest)/usr/bin
 dest-debian=$(dest)/DEBIAN
 
+aaaaaaaa
+
+
 all:
 	mkdir -p $(dest-bin)
 	mkdir -p $(dest-debian)
